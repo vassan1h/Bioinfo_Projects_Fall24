@@ -7,7 +7,7 @@ library(dplyr)
 library(ReactomePA)
 library(clusterProfiler)
 library(colourpicker) 
-library(DT) # For interactive tables
+library(DT) 
 library(patchwork) 
 library(biomaRt)
 library(gplots) # For heatmap.2()
@@ -157,20 +157,16 @@ ui <- fluidPage(
   
 
 # Define server logic
-server <- function(input, output) {
-  
+server <- function(input, output) 
   options(shiny.maxRequestSize = 30 * 1024^2) #set file size limit high so you don't exceed limit
   
   ##SAMPLE INFO
-  
     # sample_info_data
     #  loads sample information dataframe
   
-  sample_info_data <- reactive({
-    
+  sample_info_data <- reactive({   
     req(input$sample_info_upload)
-    df <- read.csv(input$sample_info_upload$datapath, stringsAsFactors = FALSE)
-    
+    df <- read.csv(input$sample_info_upload$datapath, stringsAsFactors = FALSE)    
     return(df)
     
   })
@@ -212,79 +208,54 @@ server <- function(input, output) {
   }
   
   
-  
-  
   #sample info summary tab
   output$sample_info_summary_table <- renderDT({
     sample_info_summary()
-    
   })
-  
-  
   
     # sample_data_table
     #  takes sample information data, displays it as a sortable table
     #  sum_data (df): a data frame with sample information
   
-  sample_data_table <- function(sum_data){
-    
+  sample_data_table <- function(sum_data){  
     sample_data_df <- sample_info_data()
-    
-    
     datatable(sample_data_df, rownames = FALSE, options = list(pageLength = nrow(sample_data_df)))
   }
   
   #sample data table
   output$sample_data <- renderDT({
     sample_data_table()
-    
   })
   
     # continuous_sample_histograms
     #  creates histogram plots of continuous variables in the input sample data frame
     #  sum_data (df): a data frame with sample information
-  
-  
   continuous_sample_histograms <- function(sum_data){
     sample_data_df <- sample_info_data()
     
     # Extract continuous data and variables
     continuous_data_df <- sample_data_df %>%
       select_if(is.numeric)%>%
-      
       gather()
-    
     
     ggplot(gather(continuous_data_df), aes(value, fill = key))+
       geom_histogram(bins = 10)+
       theme_bw()+
       facet_wrap(~key, scales = "free_x")
-    
-    
   }
   
-  
   #sample summary histograms
-  
   output$sample_hist <- renderPlot({
-    
     continuous_sample_histograms()
-    
   })
   
-  
   ##COUNTS INFORMATION
-  
     # counts_data
     #  loads RNA counts data frame
-  
   counts_data <- reactive({
-    
     req(input$count_info_upload)
     count_df <- read.csv(input$count_info_upload$datapath, stringsAsFactors = FALSE, row.names = 1)
-    
     return(count_df)
-    
   })
   
     # counts_summary_table
@@ -296,29 +267,20 @@ server <- function(input, output) {
     #  count_filter (int): a number of zero counts per gene to use for filtering
   
   counts_summary_table <- function(count_info_data, var_filter, count_filter){
-    
-    
     #filtering step
-    
     #calculate row/gene variances
-    
     gene_variances <- apply(count_info_data, 1, var)
     
     #convert slider value to probability value between 0 and 1
-    
     var_filter_prob <- var_filter/100 
     
     #calculate variance threshold
-    
     var_threshold <- quantile(gene_variances, var_filter_prob)
-    
     filtered_counts <- count_info_data %>%
-      
+  
       filter(
         rowSums(. != 0) >= count_filter &
-          apply(., 1, function(row) var(row) >= var_threshold)
-        
-        
+          apply(., 1, function(row) var(row) >= var_threshold)      
       )
     
     #create new tibble with all the info we want
@@ -335,9 +297,7 @@ server <- function(input, output) {
   
   #counts info summary tab
   output$count_info_summary_table <- renderDT({
-    
-    input$do #need to do this to link slider input to action button
-    
+    input$do #For slider input
     counts_summary_table(count_info_data = counts_data(), var_filter = isolate(input$var_range), count_filter = isolate(input$count_range))
     
   })
@@ -352,36 +312,27 @@ server <- function(input, output) {
     #  color_1: a color to indicate which counts passed the filters
     #'  color_2: a color to indicate which counts did not the filters
   
-  
-  
   counts_diagnostic_scatterplots <- function(count_info_data, var_filter, count_filter, color_1, color_2){
     
     #creating a tibble storing the gene medians, variances, the sum of zero 
-    #counts for each gene, and rankings
-    
+    #counts for each gene, and rankings  
     #filtering steps
     
     #calculate row/gene variances
-    
     gene_variances <- apply(count_info_data, 1, var)
     
     #convert slider value to probability value between 0 and 1
-    
     var_filter_prob <- var_filter/100 
     
     #calculate variance threshold
-    
     var_threshold <- quantile(gene_variances, var_filter_prob)
     
     
     result_tib <- count_info_data %>%
-      
       tibble("gene_count_medians" = apply(dplyr::select(.,-1), 1, median),
              "gene_variance" = apply(dplyr::select(.,-1), 1, var),
              "sum_zero_counts" = apply(dplyr::select(.,-1) == 0, 1, sum),
              "ranked_medians" = rank(gene_count_medians)
-             
-             
       )
     
     
@@ -429,18 +380,12 @@ server <- function(input, output) {
   
   counts_filtered_heatmap <- function(count_info_data, var_filter, count_filter) {
     
-    
     #  filtering step, convert to matrix, do log10 transformation
-    
-    
     #filtering step
-    
     #calculate row/gene variances
-    
     gene_variances <- apply(count_info_data, 1, var)
     
     #convert slider value to probability value between 0 and 1
-    
     var_filter_prob <- var_filter/100 
     
     #calculate variance threshold
@@ -463,8 +408,7 @@ server <- function(input, output) {
     rownames(log10_filtered_matrix) <- rownames(filtered_counts)  
     colnames(log10_filtered_matrix) <- colnames(counts_matrix)
     
-    #make heatmap
-    
+    #heatmap
     heatmap.2(log10_filtered_matrix,
               key = TRUE,
               density.info = "none",
@@ -482,32 +426,21 @@ server <- function(input, output) {
     )
   }
   
-  
   output$count_heat <- renderPlot({
-    
     input$do #connects slider input to action button
-    
     counts_filtered_heatmap(count_info_data = counts_data(),
                             var_filter = isolate(input$var_range),
-                            count_filter = isolate(input$count_range))
-    
+                            count_filter = isolate(input$count_range))  
   })
-  
-  
   
     # counts_pca_plot
     #  conducts principal components analysis (PCA) and generates a scatter plot
     # of PCA results for filtered counts
-    #
     #   data (tib): a (n x _S_) data set
     #   x_axis (string): which principal component to plot on the x-axis
     #   y_axis (string): which principal component to plot on the y-axis
-    #
     #   ggplot: scatter plot showing each sample in the first two PCs.
-    #
-    #   
     # `plot_pca(data, meta, "Raw Count PCA")`
-  
   counts_pca_plot <- function(count_info_data, x_axis, y_axis) {
     
     
@@ -519,24 +452,21 @@ server <- function(input, output) {
     )
     
     
-    # Merging PCA output and metadata together by sample names
-    
+    #Merging PCA output and metadata together by sample names
     pca_output <- data.frame(pca$x[,1:10])    
     
     
-    # Include variance_explained in x and y axis labels:
+    #Include variance_explained in x and y axis labels:
     var_explained <- (pca$sdev)^2/sum((pca$sdev)^2) * 100
     
     #extract selected principal components for the x and y axes
-    
     x_index <- as.numeric(sub("PC","",x_axis))
     y_index <- as.numeric(sub("PC","",y_axis))
     
     x_component <- var_explained[x_index]
     y_component <- var_explained[y_index]
     
-    # #make plot
-    
+    #make plot
     pca_gg <- ggplot(pca_output, aes(x=!!sym(x_axis),y=!!sym(y_axis))) +
       geom_point(color = "#0AADA8")+
       theme_bw()+
@@ -552,9 +482,7 @@ server <- function(input, output) {
   
   
   output$count_pca <- renderPlot({
-    
     input$pca_plot_do #connects slider input to action button
-    
     counts_pca_plot(count_info_data = counts_data(), 
                     x_axis = isolate(input$pca_x_axis),
                     y_axis = isolate(input$pca_y_axis))
@@ -562,8 +490,6 @@ server <- function(input, output) {
   })
 
   ##DIFFERENTIAL EXPRESSION ANALYSIS RESULTS FUNCTIONS
-  
-  
     # load_deseq_output
     #  loads the output statistics from a DESEQ2 differential expression analysis.
   
@@ -588,9 +514,7 @@ server <- function(input, output) {
     #load results
     #applying padj filter,adding additional up/down/ns column   
     annotated_deseq_res <- deseq_mat %>%
-      
       filter(padj <= padj_threshold) %>% 
-      
       mutate(Expression_Status = case_when(padj < padj_threshold & log2FoldChange > 0 ~ 'UP',
                                            padj < padj_threshold & log2FoldChange < 0 ~ 'DOWN',
                                            TRUE ~ 'NS')) 
@@ -600,15 +524,12 @@ server <- function(input, output) {
   }
   
   #sample data table
-  output$deseq_tab <- renderDT({
-    
-    
+  output$deseq_tab <- renderDT({  
     input$deseq_do #link action button to adjusted pvalue slider
     deseq_results_table(deseq_mat = load_deseq_output(),
                         padj_threshold = isolate(input$padj_range))
     
   })
-  
 
     # Function to plot the unadjusted p-values as a histogram
     #
@@ -634,10 +555,8 @@ server <- function(input, output) {
   
 
     # Function to plot the log2FoldChange from DESeq2 results in a histogram
-    #
     #   labeled_results (tibble): Tibble with DESeq2 results 
     #   padj_threshold (float): threshold for considering significance (padj)
-    #
     #   ggplot: a histogram of log2FC values from genes significant at padj
     # threshold
   
@@ -657,33 +576,23 @@ server <- function(input, output) {
   }
   
   output$logfc_hist<- renderPlot({
-    
     input$deseq_do #links action button to pvalue slider
-    
     plot_log2fc(deseq2_results = load_deseq_output(), 
                 padj_threshold = isolate(input$padj_range))
     
   })
   
-  
-  
     # Volcano plot
-    #
     #   dataf The loaded data frame.
     #   slider A negative integer value representing the magnitude of
     # p-adjusted values to color. Most of our data will be between -1 and -300.
     #   color1 One of the colors for the points.
-    #   color2 The other colors for the points. Hexadecimal strings: "#CDC4B5"
-    #
+    #   color2 The other colors for the points. 
     #   A ggplot object of a volcano plot
     #   Returns a volcano plot of -log10(adjusted-p values) and log2Fold Change
     # of DESEQ2 results
-  
-    #
     #    volcano_plot(df, "blue", "taupe")
   volcano_plot <- function(deseq2_results, slider, color1, color2) {
-    
-    
     gg <- ggplot(deseq2_results, aes(x = log2FoldChange, y = -log10(padj))) +
       geom_point(aes(color = ifelse(-log10(padj) < slider, "FALSE", "TRUE")), size = 0.5)+
       scale_color_manual(values = c("TRUE" = color2, "FALSE"= color1))+
@@ -710,27 +619,27 @@ server <- function(input, output) {
   })
 
   ##ReactomePA Reactome Pathway Analysis
-  # Load the original data (CSV file)
+  #Load the original data (CSV file)
   reactome_data <- reactive({
     req(input$reactome_upload)
     read.csv(input$reactome_upload$datapath)
   })
   
-  # Extract relevant columns using org.Hs.eg.db
+  #Extract relevant columns using org.Hs.eg.db
   library(org.Hs.eg.db)  # Load the annotation database
   
-  # Process gene list to convert Ensembl IDs to Entrez IDs
+  #Process gene list to convert Ensembl IDs to Entrez IDs
   genelist_process <- reactive({
     df <- reactome_data()
     
-    # Process gene list: Remove version numbers from Ensembl IDs
+    #Process gene list: Remove version numbers from Ensembl IDs
     genelist <- data.frame(
       GeneID = gsub("\\..*$", "", df[, 1]),  # Remove version numbers
       FC = df[, 6],  # Fold Change
       padj = df[, 10]  # Adjusted p-value
     )
     
-    # Use org.Hs.eg.db to map Ensembl IDs to Entrez IDs
+    #Use org.Hs.eg.db to map Ensembl IDs to Entrez IDs
     genelist$entrezgene_id <- mapIds(
       org.Hs.eg.db,
       keys = genelist$GeneID,
@@ -739,15 +648,15 @@ server <- function(input, output) {
       multiVals = "first"
     )
     
-    # Filter the gene list for adjusted p-value and fold change criteria
+    #Filter the gene list for adjusted p-value and fold change criteria
     final <- genelist %>%
       filter(!is.na(entrezgene_id)) %>%
       filter(padj < 0.05 & abs(FC) > 1.5)
     
-    final$entrezgene_id  # Return the Entrez IDs for pathway analysis
+    final$entrezgene_id  #Return the Entrez IDs for pathway analysis
   })
   
-  # Perform Reactome pathway enrichment
+  #Perform Reactome pathway enrichment
   pathway_results <- eventReactive(input$run_analysis, {
     enrichPathway(
       gene = genelist_process(),
@@ -785,7 +694,7 @@ server <- function(input, output) {
     output$dotplot <- renderPlot({
       req(pathway_results())
       data <- as.data.frame(pathway_results()) %>%
-        arrange(p.adjust) %>%  # Sort by p.adjust ascending
+        arrange(p.adjust) %>%  #Sort by p.adjust ascending
         mutate(Description = fct_reorder(Description, p.adjust))
       
       ggplot(data, aes(x = Description, y = p.adjust, size = Count, color = p.adjust)) +
