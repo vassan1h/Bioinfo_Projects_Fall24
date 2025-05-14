@@ -65,5 +65,5 @@ shiny::runApp("your_playground")
 
 ### 👨‍🔬 Author
 
-- **Vassanth M.,
-- MS Bioinformatics, Boston University**  
+**Vassanth M.,
+MS Bioinformatics, Boston University**  
