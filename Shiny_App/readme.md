@@ -42,3 +42,28 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 BiocManager::install(c("ReactomePA", "clusterProfiler", "biomaRt",
                        "org.Hs.eg.db", "rtracklayer", "fgsea"))
+
+
+## Run it!
+
+```r
+shiny::runApp("path_to_project_directory")
+```
+
+## 🧬 App Structure
+
+- **Samples Tab**: Upload sample metadata, visualize summaries and distributions  
+- **Counts Tab**: Upload count matrix, apply filtering thresholds, inspect QC plots and PCA  
+- **DE Tab**: Upload DESeq2 results, filter by adjusted p-value, explore with volcano plots  
+- **Reactome Pathway Analysis Tab**: Perform functional enrichment and visualize ranked pathway output
+
+
+## 📚 Reference Dataset
+
+- **GSE64810**: *mRNA-Seq Expression profiling of BA9 in Huntington’s Disease*  
+  [NCBI GEO Link](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64810)
+
+## 👨‍🔬 Author
+
+- **Vassanth M., MS Bioinformatics**  
+  Project submitted for **BF591 Final Project (2024)**
