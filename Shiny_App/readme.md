@@ -31,7 +31,7 @@ An interactive Shiny application for exploratory analysis of mRNA-Seq expression
 
 ## Getting Started
 
-### 1. Install Required Packages
+### Install Required Packages
 
 ```r
 install.packages(c("shiny", "bslib", "ggplot2", "tidyverse", "forcats", "dplyr",
@@ -42,15 +42,15 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 BiocManager::install(c("ReactomePA", "clusterProfiler", "biomaRt",
                        "org.Hs.eg.db", "rtracklayer", "fgsea"))
+```
 
-
-## Run it!
+### Run it!
 
 ```r
 shiny::runApp("path_to_project_directory")
 ```
 
-## 🧬 App Structure
+### 🧬 App Structure
 
 - **Samples Tab**: Upload sample metadata, visualize summaries and distributions  
 - **Counts Tab**: Upload count matrix, apply filtering thresholds, inspect QC plots and PCA  
@@ -58,12 +58,12 @@ shiny::runApp("path_to_project_directory")
 - **Reactome Pathway Analysis Tab**: Perform functional enrichment and visualize ranked pathway output
 
 
-## 📚 Reference Dataset
+### 📚 Reference Dataset
 
 - **GSE64810**: *mRNA-Seq Expression profiling of BA9 in Huntington’s Disease*  
   [NCBI GEO Link](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64810)
 
-## 👨‍🔬 Author
+### 👨‍🔬 Author
 
 - **Vassanth M., MS Bioinformatics**  
   Project submitted for **BF591 Final Project (2024)**
