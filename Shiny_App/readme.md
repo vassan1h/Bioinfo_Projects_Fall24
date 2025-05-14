@@ -66,4 +66,3 @@ shiny::runApp("your_playground")
 ### 👨‍🔬 Author
 
 - **Vassanth M., MS Bioinformatics**  
-  Project submitted for **BF591 Final Project (2024)**
