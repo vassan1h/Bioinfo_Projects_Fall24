@@ -26,6 +26,8 @@ The project includes standalone implementations of:
 
 Each function is implemented from scratch with an emphasis on clarity and algorithmic logic.
 
+---
+
 # Project 2: Replication of RNA-Seq Figures on Transcriptional Memory
 
 This project replicates key figures from the study:

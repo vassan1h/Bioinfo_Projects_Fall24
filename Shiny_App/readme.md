@@ -63,7 +63,7 @@ shiny::runApp("your_playground")
 - **GSE64810**: *mRNA-Seq Expression profiling of BA9 in Huntington’s Disease*  
   [NCBI GEO Link](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64810)
 
-- [Article I used](https://pmc.ncbi.nlm.nih.gov/articles/PMC4670106/)
+- [Reference article](https://pmc.ncbi.nlm.nih.gov/articles/PMC4670106/)
 
 ### 👨‍🔬 Author
 
