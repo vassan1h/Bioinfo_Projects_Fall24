@@ -47,7 +47,7 @@ BiocManager::install(c("ReactomePA", "clusterProfiler", "biomaRt",
 ### Run it!
 
 ```r
-shiny::runApp("path_to_project_directory")
+shiny::runApp("your_playground")
 ```
 
 ### 🧬 App Structure
@@ -65,5 +65,5 @@ shiny::runApp("path_to_project_directory")
 
 ### 👨‍🔬 Author
 
-- **Vassanth M., MS Bioinformatics**  
-  Project submitted for **BF591 Final Project (2024)**
+Vassanth M.,
+MS Bioinformatics @BU  
